@@ -63,7 +63,7 @@ class ParticleFiler():
         self.MOTION_DISPERSION_X = float(rospy.get_param("~motion_dispersion_x", 0.05))
         self.MOTION_DISPERSION_Y = float(rospy.get_param("~motion_dispersion_y", 0.025))
         self.MOTION_DISPERSION_THETA = float(rospy.get_param("~motion_dispersion_theta", 0.25))
-        
+
         # various data containers used in the MCL algorithm
         self.MAX_RANGE_PX = None
         self.odometry_data = np.array([0.0,0.0,0.0])
@@ -170,8 +170,8 @@ class ParticleFiler():
             stamp = rospy.Time.now()
 
         # this may cause issues with the TF tree. If so, see the below code.
-        self.pub_tf.sendTransform((pose[0],pose[1],0),tf.transformations.quaternion_from_euler(0, 0, pose[2]), 
-               stamp , "/laser", "/map")
+        # self.pub_tf.sendTransform((pose[0],pose[1],0),tf.transformations.quaternion_from_euler(0, 0, pose[2]),
+        #        stamp , "/laser", "/map")
 
         # also publish odometry to facilitate getting the localization pose
         if self.PUBLISH_ODOM:
@@ -181,7 +181,7 @@ class ParticleFiler():
             odom.pose.pose.position.y = pose[1]
             odom.pose.pose.orientation = Utils.angle_to_quaternion(pose[2])
             self.odom_pub.publish(odom)
-        
+
         return # below this line is disabled
 
         """
@@ -199,7 +199,7 @@ class ParticleFiler():
         map_laser_rotation = np.array( tf.transformations.quaternion_from_euler(0, 0, pose[2]) )
         # Apply laser -> base_link transform to map -> laser transform
         # This gives a map -> base_link transform
-        laser_base_link_offset = (0.265, 0, 0)
+        laser_base_link_offset = (0.325, 0, 0)
         map_laser_pos -= np.dot(tf.transformations.quaternion_matrix(tf.transformations.unit_vector(map_laser_rotation))[:3,:3], laser_base_link_offset).T
 
         # Publish transform
@@ -293,7 +293,7 @@ class ParticleFiler():
             rot = Utils.rotation_matrix(-self.last_pose[2])
             delta = np.array([position - self.last_pose[0:2]]).transpose()
             local_delta = (rot*delta).transpose()
-            
+
             self.odometry_data = np.array([local_delta[0,0], local_delta[0,1], orientation - self.last_pose[2]])
             self.last_pose = pose
             self.last_stamp = msg.header.stamp
@@ -362,7 +362,7 @@ class ParticleFiler():
         z_rand  = self.Z_RAND
         z_hit   = self.Z_HIT
         sigma_hit = self.SIGMA_HIT
-        
+
         table_width = int(self.MAX_RANGE_PX) + 1
         self.sensor_model_table = np.zeros((table_width,table_width))
 
@@ -440,7 +440,7 @@ class ParticleFiler():
         Vectorized motion model. Computing the motion model over all particles is thousands of times
         faster than doing it for each particle individually due to vectorization and reduction in
         function call overhead
-        
+
         TODO this could be better, but it works for now
             - fixed random noise is not very realistic
             - ackermann model provides bad estimates at high speed
@@ -473,7 +473,7 @@ class ParticleFiler():
                                         optimizations to CDDT which simultaneously performs ray casting
                                         in two directions, reducing the amount of work by roughly a third
         '''
-        
+
         num_rays = self.downsampled_angles.shape[0]
         # only allocate buffers once to avoid slowness
         if self.first_sensor_update:
@@ -603,14 +603,14 @@ class ParticleFiler():
 
         # save the particles
         self.particles = proposal_distribution
-    
+
     def expected_pose(self):
         # returns the expected value of the pose given the particle distribution
         return np.dot(self.particles.transpose(), self.weights)
 
     def update(self):
         '''
-        Apply the MCL function to update particle filter state. 
+        Apply the MCL function to update particle filter state.
 
         Ensures the state is correctly initialized, and acquires the state lock before proceeding.
         '''
