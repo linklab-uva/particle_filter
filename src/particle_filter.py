@@ -642,7 +642,8 @@ class ParticleFiler():
                 ips = 1.0 / (t2 - t1)
                 self.smoothing.append(ips)
                 if self.iters % 10 == 0:
-                    print "iters per sec:", int(self.timer.fps()), " possible:", int(self.smoothing.mean())
+                    # print "iters per sec:", int(self.timer.fps()), " possible:", int(self.smoothing.mean())
+                    pass
 
                 self.visualize()
 
