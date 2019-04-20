@@ -182,7 +182,7 @@ class ParticleFiler():
             odom.pose.pose.orientation = Utils.angle_to_quaternion(pose[2])
             self.odom_pub.publish(odom)
 
-        return # below this line is disabled
+        # return # below this line is disabled
 
         """
         Our particle filter provides estimates for the "laser" frame
