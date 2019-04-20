@@ -34,7 +34,7 @@ class CircularArray(object):
 
 class Timer:
     """ Simple helper class to compute the rate at which something is called.
-        
+
         "smoothing" determines the size of the underlying circular array, which averages
         out variations in call rate over time.
 
@@ -53,8 +53,8 @@ class Timer:
     def fps(self):
         return self.arr.mean()
 
-def angle_to_quaternion(angle):
-    """Convert an angle in radians into a quaternion _message_."""
+def yaw_to_quaternion(angle):
+    """Convert yaw in radians into a quaternion _message_."""
     return Quaternion(*tf.transformations.quaternion_from_euler(0, 0, angle))
 
 def quaternion_to_angle(q):
@@ -75,11 +75,11 @@ def particle_to_pose(particle):
     pose = Pose()
     pose.position.x = particle[0]
     pose.position.y = particle[1]
-    pose.orientation = angle_to_quaternion(particle[2])
+    pose.orientation = yaw_to_quaternion(particle[2])
     return pose
 
 def particles_to_poses(particles):
-    ''' Converts a two dimensional array of particles into an array of Poses. 
+    ''' Converts a two dimensional array of particles into an array of Poses.
         Particles can be a array like [[x0, y0, theta0], [x1, y1, theta1]...]
     '''
     return map(particle_to_pose, particles)
@@ -97,7 +97,7 @@ def map_to_world_slow(x,y,t,map_info):
     ''' Converts given (x,y,t) coordinates from the coordinate space of the map (pixels) into world coordinates (meters).
         Provide the MapMetaData object from a map message to specify the change in coordinates.
         *** Logical, but slow implementation, when you need a lot of coordinate conversions, use the map_to_world function
-    ''' 
+    '''
     scale = map_info.resolution
     angle = quaternion_to_angle(map_info.origin.orientation)
     rot = rotation_matrix(angle)
@@ -174,7 +174,7 @@ def world_to_map_slow(x,y,t, map_info):
     ''' Converts given (x,y,t) coordinates from the coordinate space of the world (meters) into map coordinates (pixels).
         Provide the MapMetaData object from a map message to specify the change in coordinates.
         *** Logical, but slow implementation, when you need a lot of coordinate conversions, use the world_to_map function
-    ''' 
+    '''
     scale = map_info.resolution
     angle = quaternion_to_angle(map_info.origin.orientation)
     rot = rotation_matrix(-angle)
