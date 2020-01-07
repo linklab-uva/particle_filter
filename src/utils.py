@@ -12,9 +12,9 @@ import matplotlib.pyplot as plt
 import time
 
 class CircularArray(object):
-    """ Simple implementation of a circular array.
-        You can append to it any number of times but only "size" items will be kept
-    """
+    ''' Simple implementation of a circular array.
+        You can append to it any number of times but only 'size' items will be kept
+    '''
     def __init__(self, size):
         self.arr = np.zeros(size)
         self.ind = 0
@@ -33,14 +33,14 @@ class CircularArray(object):
         return np.median(self.arr[:self.num_els])
 
 class Timer:
-    """ Simple helper class to compute the rate at which something is called.
+    ''' Simple helper class to compute the rate at which something is called.
 
-        "smoothing" determines the size of the underlying circular array, which averages
+        'smoothing' determines the size of the underlying circular array, which averages
         out variations in call rate over time.
 
         use timer.tick() to record an event
         use timer.fps() to report the average event rate.
-    """
+    '''
     def __init__(self, smoothing):
         self.arr = CircularArray(smoothing)
         self.last_time = time.time()
@@ -54,13 +54,13 @@ class Timer:
         return self.arr.mean()
 
 def yaw_to_quaternion(angle):
-    """Convert yaw in radians into a quaternion _message_."""
+    '''Convert yaw in radians into a quaternion _message_.'''
     return Quaternion(*tf.transformations.quaternion_from_euler(0, 0, angle))
 
 def quaternion_to_angle(q):
-    """Convert a quaternion _message_ into an angle in radians.
+    '''Convert a quaternion _message_ into an angle in radians.
     The angle represents the yaw.
-    This is not just the z component of the quaternion."""
+    This is not just the z component of the quaternion.'''
     x, y, z, w = q.x, q.y, q.z, q.w
     roll, pitch, yaw = tf.transformations.euler_from_quaternion((x, y, z, w))
     return yaw
