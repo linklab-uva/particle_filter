@@ -44,29 +44,29 @@ class ParticleFiler():
 
     def __init__(self):
         # parameters
-        self.ANGLE_STEP        = int(rospy.get_param('~angle_step'))
-        self.MAX_PARTICLES     = int(rospy.get_param('~max_particles'))
-        self.MAX_VIZ_PARTICLES = int(rospy.get_param('~max_viz_particles'))
-        self.INV_SQUASH_FACTOR = 1.0 / float(rospy.get_param('~squash_factor'))
-        self.MAX_RANGE_METERS  = float(rospy.get_param('~max_range'))
-        self.THETA_DISCRETIZATION = int(rospy.get_param('~theta_discretization'))
-        self.WHICH_RM          = rospy.get_param('~range_method', 'cddt').lower()
-        self.RANGELIB_VAR      = int(rospy.get_param('~rangelib_variant', '3'))
-        self.SHOW_FINE_TIMING  = bool(rospy.get_param('~fine_timing', '0'))
-        self.PUBLISH_ODOM      = bool(rospy.get_param('~publish_odom', '1'))
-        self.DO_VIZ            = bool(rospy.get_param('~viz'))
+        self.ANGLE_STEP        = int(rospy.get_param('/{}/particle_filter/angle_step'.format(car_name)))
+        self.MAX_PARTICLES     = int(rospy.get_param('/{}/particle_filter/max_particles'.format(car_name)))
+        self.MAX_VIZ_PARTICLES = int(rospy.get_param('/{}/particle_filter/max_viz_particles'.format(car_name)))
+        self.INV_SQUASH_FACTOR = 1.0 / float(rospy.get_param('/{}/particle_filter/squash_factor'.format(car_name)))
+        self.MAX_RANGE_METERS  = float(rospy.get_param('/{}/particle_filter/max_range'.format(car_name)))
+        self.THETA_DISCRETIZATION = int(rospy.get_param('/{}/particle_filter/theta_discretization'.format(car_name)))
+        self.WHICH_RM          = rospy.get_param('/{}/particle_filter/range_method'.format(car_name), 'cddt').lower()
+        self.RANGELIB_VAR      = int(rospy.get_param('/{}/particle_filter/rangelib_variant'.format(car_name), '3'))
+        self.SHOW_FINE_TIMING  = bool(rospy.get_param('/{}/particle_filter/fine_timing'.format(car_name), '0'))
+        self.PUBLISH_ODOM      = bool(rospy.get_param('/{}/particle_filter/publish_odom'.format(car_name), '1'))
+        self.DO_VIZ            = bool(rospy.get_param('/{}/particle_filter/viz'.format(car_name)))
 
         # sensor model constants
-        self.Z_SHORT   = float(rospy.get_param('~z_short', 0.01))
-        self.Z_MAX     = float(rospy.get_param('~z_max', 0.07))
-        self.Z_RAND    = float(rospy.get_param('~z_rand', 0.12))
-        self.Z_HIT     = float(rospy.get_param('~z_hit', 0.75))
-        self.SIGMA_HIT = float(rospy.get_param('~sigma_hit', 8.0))
+        self.Z_SHORT   = float(rospy.get_param('/{}/particle_filter/z_short'.format(car_name), 0.01))
+        self.Z_MAX     = float(rospy.get_param('/{}/particle_filter/z_max'.format(car_name), 0.07))
+        self.Z_RAND    = float(rospy.get_param('/{}/particle_filter/z_rand'.format(car_name), 0.12))
+        self.Z_HIT     = float(rospy.get_param('/{}/particle_filter/z_hit'.format(car_name), 0.75))
+        self.SIGMA_HIT = float(rospy.get_param('/{}/particle_filter/sigma_hit'.format(car_name), 8.0))
 
         # motion model constants
-        self.MOTION_DISPERSION_X = float(rospy.get_param('~motion_dispersion_x', 0.05))
-        self.MOTION_DISPERSION_Y = float(rospy.get_param('~motion_dispersion_y', 0.025))
-        self.MOTION_DISPERSION_THETA = float(rospy.get_param('~motion_dispersion_theta', 0.25))
+        self.MOTION_DISPERSION_X = float(rospy.get_param('/{}/particle_filter/motion_dispersion_x'.format(car_name), 0.05))
+        self.MOTION_DISPERSION_Y = float(rospy.get_param('/{}/particle_filter/motion_dispersion_y'.format(car_name), 0.025))
+        self.MOTION_DISPERSION_THETA = float(rospy.get_param('/{}/particle_filter/motion_dispersion_theta'.format(car_name), 0.25))
 
         # various data containers used in the MCL algorithm
         self.MAX_RANGE_PX = None
@@ -121,14 +121,14 @@ class ParticleFiler():
         self.pub_tf = tf.TransformBroadcaster()
 
         # these topics are to receive data from the racecar
-        self.laser_sub = rospy.Subscriber(rospy.get_param('~scan_topic', '/{}/scan'.format(car_name)), LaserScan, self.lidarCB, queue_size = 1)
-        self.odom_sub  = rospy.Subscriber(rospy.get_param('~odometry_topic', '/{}/odom'.format(car_name)), Odometry, self.odomCB, queue_size = 1)
+        self.laser_sub = rospy.Subscriber(rospy.get_param('/{}/particle_filter/scan_topic', '/{}/scan'.format(car_name)), LaserScan, self.lidarCB, queue_size = 1)
+        self.odom_sub  = rospy.Subscriber(rospy.get_param('/{}/particle_filter/odometry_topic', '/{}/odom'.format(car_name)), Odometry, self.odomCB, queue_size = 1)
         # self.pose_sub  = rospy.Subscriber('/initialpose', PoseWithCovarianceStamped, self.clicked_pose, queue_size = 1)
         # self.click_sub = rospy.Subscriber('/clicked_point', PointStamped, self.clicked_pose, queue_size = 1)
 
-        initial_pose_x = float(rospy.get_param('~initial_pose_x', '0.0'))
-        initial_pose_y = float(rospy.get_param('~initial_pose_y', '0.0'))
-        initial_pose_a = float(rospy.get_param('~initial_pose_a', '0.0'))
+        initial_pose_x = float(rospy.get_param('/{}/particle_filter/initial_pose_x'.format(car_name), '0.0'))
+        initial_pose_y = float(rospy.get_param('/{}/particle_filter/initial_pose_y'.format(car_name), '0.0'))
+        initial_pose_a = float(rospy.get_param('/{}/particle_filter/initial_pose_a'.format(car_name), '0.0'))
 
         initial_pose = Pose()
         initial_pose.position.x = initial_pose_x
@@ -146,8 +146,10 @@ class ParticleFiler():
         RangeLibc method. Also stores a matrix which indicates the permissible region of the map
         '''
         # this way you could give it a different map server as a parameter
-        map_service_name = rospy.get_param('~static_map', 'static_map')
+        # map_service_name = rospy.get_param('/static_map', '/static_map')
+        map_service_name = '/static_map'
         print('getting map from service: ', map_service_name)
+        print('map service name: {}'.format(map_service_name))
         rospy.wait_for_service(map_service_name)
         map_msg = rospy.ServiceProxy(map_service_name, GetMap)().map
 

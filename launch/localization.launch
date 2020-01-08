@@ -1,6 +1,8 @@
 <?xml version='1.0'?>
 
 <launch>
+  <arg         name           = 'car_name'
+               default        = 'car_1'/>
   <arg         name           = 'scan_topic'
                default        = 'car_1/scan'/>
   <arg         name           = 'odom_topic'
@@ -24,6 +26,7 @@
   <node        pkg            = 'particle_filter'
                type           = 'particle_filter.py'
                name           = 'particle_filter'
+               args           = '$(arg car_name)'
                output         = 'screen'>
   <param       name           = 'scan_topic'
                value          = '$(arg scan_topic)'/>
